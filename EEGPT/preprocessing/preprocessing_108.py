@@ -1,0 +1,194 @@
+import mne
+import pandas as pd
+import torch
+import os
+import numpy as np
+import lmdb
+import pickle
+from sklearn.preprocessing import StandardScaler
+
+root_dir = "/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/TIA"
+dest_dir = '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/TIA_preprocessed_eegpt'
+
+time_window = 10
+
+labeler = pd.read_csv(f"{root_dir}/subject_to_label.csv")
+label_dict = {}
+label_list = {0: [], 1:[]}
+for idx, row in labeler.iterrows():
+    # row là 1 Series
+    label_dict[row["SUBJECT_ID"]] = row["label"]
+    label_list[row["label"]].append(row["SUBJECT_ID"])
+np.random.shuffle(label_list[0])
+np.random.shuffle(label_list[1])
+
+meta_data = pd.read_csv(f"{root_dir}/metadata.csv")
+
+
+selected_channels = [
+    'Fp1','Fp2','F3','F4','F7','F8',
+    'T3','T4','C3','C4','T5','T6',
+    'P3','P4','O1','O2','Fz','Cz','Pz',
+]
+
+eeg_dict = {}
+
+def pre_reading_eeg(subject_id):
+    subject_path = os.path.join(root_dir, subject_id)
+    files = os.listdir(subject_path)
+    for file in files:
+        path = os.path.join(subject_path, file)
+        try:
+            raw = mne.io.read_raw_edf(path, preload=True, verbose=False)
+            raw.crop(tmin=2.0)   # tmin tính theo giây
+        except Exception as e:
+            print(f'[WARN] failed to read {path}: {e}')
+            continue
+
+        # ensure required channels exist; skip if missing
+        have = set(ch.upper() for ch in raw.ch_names)
+        need = [ch.upper() for ch in selected_channels]
+        if not all(ch in have for ch in need):
+            print(f'[WARN] missing channels in {path}, skip.')
+            continue
+
+        raw.pick(selected_channels)
+        raw.reorder_channels(selected_channels)
+        raw.filter(0.3, 75)
+        raw.notch_filter(50)
+        try:
+            raw.resample(200)
+        except Exception as e:
+            print(f'[WARN] resample failed {path}: {e}')
+            continue
+
+        # data in microvolts as float32
+        try:
+            eeg = raw.get_data(units='uV', reject_by_annotation='omit').astype(np.float32)
+        except TypeError:
+            eeg = (raw.get_data(reject_by_annotation='omit') * 1e6).astype(np.float32)
+
+        chs, points = eeg.shape
+        a = points % (time_window * 200)
+        if a != 0:
+            eeg = eeg[:, :-a]
+        if eeg.size == 0:
+            continue
+
+        eeg = eeg.reshape(chs, -1, time_window, 200).transpose(1, 0, 2, 3)
+
+        eeg_dict[file] = eeg
+        label_dict[file] = label_dict[subject_id]
+
+for subject_id in labeler['SUBJECT_ID']:
+    pre_reading_eeg(subject_id)
+
+def extract_df(df, subject_id):
+    return df[df["SUBJECT_ID"].isin(subject_id)].copy()
+
+def apply_standardize_df(df, mean, std):
+    # Lấy các cột số
+    num_cols = df.select_dtypes(include="number").columns
+    
+    # Thay null bằng mean của từng cột (theo mean đã cho)
+    df[num_cols] = df[num_cols].fillna(mean)
+    
+    # Standardize bằng mean, std đã cho
+    df[num_cols] = (df[num_cols] - mean) / std
+    return df
+
+def standardize_df(df):
+    num_cols = df.select_dtypes(include="number").columns
+    df[num_cols] = df[num_cols].fillna(df[num_cols].mean())
+    scaler = StandardScaler()
+    mean, std = df[num_cols].mean(), df[num_cols].std(ddof=0)
+    df[num_cols] = scaler.fit_transform(df[num_cols])
+    return df, mean, std
+
+
+def stratified_split(fold_idx):
+    splits = {'train': [], 'test': [], 'val': []}
+    for lbl, lst in label_list.items():
+        n = len(lst)
+        n_test = n // 5
+        test_start = fold_idx * n_test
+        test_end = test_start + n_test if fold_idx < 4 else n  # last fold takes the remainder
+        splits['test'] += lst[test_start:test_end]
+        train = lst[:test_start] + lst[test_end:]
+        num_val = len(train) // 5
+        splits['train'] += train[num_val:]
+        splits['val'] += train[:num_val]
+    return splits
+
+def fold_construct(fold_idx):
+    print(f'Constructing fold {fold_idx} ...')
+    
+    dataset = {
+        'train': list(),
+        'val': list(),
+        'test': list(),
+    }
+    
+    subjects = stratified_split(fold_idx)
+    
+    df_dict = {
+        'train': extract_df(meta_data, subjects['train']),
+        'val': extract_df(meta_data, subjects['val']),
+        'test': extract_df(meta_data, subjects['test']),
+    }
+    
+    files_dict = {
+        'train': [],
+        'val': [],
+        'test': [],
+    }
+    
+    for key in subjects.keys():
+        for subject in subjects[key]:
+            subject_path = os.path.join(root_dir, subject)
+            files = os.listdir(subject_path)
+            for file in files:
+                files_dict[key].append(file)
+
+    train, mean, std = standardize_df(df_dict['train'])
+    val = apply_standardize_df(df_dict['val'], mean, std)
+    test = apply_standardize_df(df_dict['test'], mean, std)
+
+    mean = mean.to_numpy()
+    std = std.to_numpy()
+
+    print(subjects['train'])
+    print(subjects['val'])
+    print(subjects['test'])
+
+    db = lmdb.open(f'{dest_dir}/fold_{fold_idx}', map_size=1000000000)
+    for files_key in files_dict.keys():
+        for file in files_dict[files_key]:
+            eeg = eeg_dict.get(file, None)
+            if eeg is None:
+                # print(f'[WARN] no pre-read eeg for {file}, skip.')
+                continue
+            # label per subject
+            label = label_dict[file]
+            meta = df_dict[files_key][df_dict[files_key]['SUBJECT_ID'] == file[:8]]
+            meta = meta.drop(columns=["SUBJECT_ID"]).to_numpy()
+
+            for i, sample in enumerate(eeg):
+                sample_key = f'{file}-{i}'  # Fixed typo from file[:-4]
+                data_dict = {
+                    'sample': sample, 'label': label, 'meta': meta
+                }
+                txn = db.begin(write=True)
+                txn.put(key=sample_key.encode(), value=pickle.dumps(data_dict, protocol=pickle.HIGHEST_PROTOCOL))
+                txn.commit()
+                dataset[files_key].append(sample_key)
+
+    txn = db.begin(write=True)
+    txn.put(key='__keys__'.encode(), value=pickle.dumps(dataset, protocol=pickle.HIGHEST_PROTOCOL))
+    txn.put(key='__mean__'.encode(), value=pickle.dumps(mean, protocol=pickle.HIGHEST_PROTOCOL))
+    txn.put(key='__std__'.encode(), value=pickle.dumps(std, protocol=pickle.HIGHEST_PROTOCOL))
+    txn.commit()
+    db.close()
+
+for fold_idx in range(5):
+    fold_construct(fold_idx)
