@@ -79,35 +79,6 @@ M-EEG-experiment/
 ---
 
 ## 🚀 Getting Started
-
-### Prerequisites
-
-- Python 3.8+
-- CUDA-compatible GPU (recommended)
-- 16GB+ RAM
-
-### Quick Start for Reviewers
-
-1. **Extract sample data**:
-   ```bash
-   tar -xvf SampleData.tar.gz
-   ```
-
-2. **Set up environment** (choose one model):
-   ```bash
-   cd CBraMod  # or EEGPT
-   conda create -n m-eeg python=3.8
-   conda activate m-eeg
-   pip install -r requirements.txt
-   ```
-
-3. **Verify installation** with sample data:
-   ```bash
-   python scripts/load_sample_data.py --data_dir ../SampleData
-   ```
-
-**For Reviewers**: The sample data allows verification of data formats, preprocessing pipelines, and model architectures. Due to file size constraints, the sample contains a representative subset. Full experimental reproduction requires the complete dataset available through the access process below.
-
 ### Installation
 
 Each model architecture has its own dependencies. We recommend using **separate virtual environments**:
@@ -116,7 +87,7 @@ Each model architecture has its own dependencies. We recommend using **separate 
 
 ```bash
 cd CBraMod
-conda create -n cbramod python=3.8
+conda create -n cbramod python=3.11
 conda activate cbramod
 pip install -r requirements.txt
 ```
@@ -125,7 +96,7 @@ pip install -r requirements.txt
 
 ```bash
 cd EEGPT
-conda create -n eegpt python=3.8
+conda create -n eegpt python=3.11
 conda activate eegpt
 pip install -r requirements.txt
 ```
@@ -279,21 +250,6 @@ SampleData/
         ├── sub-*_task-rest_eeg.json
         └── sub-*_task-rest_channels.tsv
 ```
-
-### Quick Start with Sample Data
-
-```bash
-# Example: Load and visualize sample EEG data
-cd CBraMod  # or EEGPT
-python scripts/load_sample_data.py --data_dir ../SampleData
-
-# Example: Run preprocessing on sample data
-python scripts/preprocess.py \
-    --input_dir ../SampleData \
-    --output_dir ./processed_samples
-```
-
-**Note**: The sample data contains a small subset of anonymized records for verification purposes only. The full M-EEG dataset will be available through the controlled-access process described below.
 
 ---
 
