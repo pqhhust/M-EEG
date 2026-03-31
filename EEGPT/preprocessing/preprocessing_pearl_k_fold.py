@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-root_dir = '/mnt/disk1/aiotlab/namth/ds004796-download'
-output_dir = '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/pearl_30s_sternberg/eegpt_108'
-csv_path = "/mnt/disk1/aiotlab/namth/ds004796-download/meta.csv"
+root_dir = '/path/to/ds004796-download'
+output_dir = '/path/to/datasets/pearl_30s_sternberg/eegpt_108'
+csv_path = "/path/to/ds004796-download/meta.csv"
 fs = 200
 seed = 3407 # a`c wys`
 task = 'sternberg' # 'msit' or 'rest' or 'sternberg'

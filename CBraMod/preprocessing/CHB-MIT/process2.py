@@ -4,8 +4,8 @@ import numpy as np
 from tqdm import tqdm
 import multiprocessing as mp
 
-root = "/data/datasets/BigDownstream/chb-mit/processed"
-out = "/data/datasets/BigDownstream/chb-mit/processed_seg"
+root = "/path/to/datasets/chb-mit/processed"
+out = "/path/to/datasets/chb-mit/processed_seg"
 
 # root = 'clean_signals'
 # out = 'clean_segments'

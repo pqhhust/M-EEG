@@ -15,8 +15,8 @@ warnings.filterwarnings(
 )
 
 # ------------------ Preprocessing ------------------
-root_dir = "/home/aiotlab/.cache/kagglehub/datasets/patrickiitmz/eeget-als-dataset/versions/1/EEGET-ALS Dataset"
-output_db = "/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/als_eegpt_official"
+root_dir = "/path/to/EEGET-ALS Dataset"
+output_db = "/path/to/datasets/als_eegpt_official"
 task = "LRF0"
 win_sec = 4
 des_fs = 256  # resample to 256 Hz

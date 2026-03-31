@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 
 
-data_dir = '/data/datasets/BigDownstream/SEED-VIG/mat/Raw_Data'
-labels_dir = '/data/datasets/BigDownstream/SEED-VIG/mat/perclos_labels'
+data_dir = '/path/to/datasets/SEED-VIG/mat/Raw_Data'
+labels_dir = '/path/to/datasets/SEED-VIG/mat/perclos_labels'
 
 files = [file for file in os.listdir(data_dir)]
 files = sorted(files)
@@ -28,7 +28,7 @@ dataset = {
     'test': list(),
 }
 
-db = lmdb.open('/data/datasets/BigDownstream/SEED-VIG/processed', map_size=6000000000)
+db = lmdb.open('/path/to/datasets/SEED-VIG/processed', map_size=6000000000)
 
 for files_key in files_dict.keys():
     for file in files_dict[files_key]:

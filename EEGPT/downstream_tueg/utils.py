@@ -834,8 +834,8 @@ def prepare_TUSZ_dataset(root):
     import pandas as pd
     import numpy as np
 
-    train_csv = pd.read_csv('/disks/SSD2/data/transformed2/tuh-eeg/seizures.csv')
-    all_eegs =  np.load('/disks/SSD2/data/transformed2/tuh-eeg/eegs.npy',allow_pickle=True).item()
+    train_csv = pd.read_csv('/path/to/tuh-eeg/seizures.csv')
+    all_eegs =  np.load('/path/to/tuh-eeg/eegs.npy',allow_pickle=True).item()
     
     train_csv = train_csv[train_csv.loc[:,'id'].isin(set(all_eegs.keys()))]
     

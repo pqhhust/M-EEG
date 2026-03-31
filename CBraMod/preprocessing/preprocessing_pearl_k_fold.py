@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-root_dir = '/mnt/disk1/aiotlab/namth/pearl'
-output_dir = '/mnt/disk1/aiotlab/pqhung/icml2026-eeg/pearl_30s_msit'
-csv_path = "/mnt/disk1/aiotlab/namth/pearl/meta.csv"
+root_dir = '/path/to/pearl'
+output_dir = '/path/to/pearl_30s_msit'
+csv_path = "/path/to/pearl/meta.csv"
 seed = 3407 # a`c wys`
 task = 'msit' # 'msit' or 'rest' or 'sternberg'
 np.random.seed(seed)

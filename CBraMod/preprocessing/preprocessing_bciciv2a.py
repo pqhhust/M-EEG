@@ -13,7 +13,7 @@ def butter_bandpass(low_cut, high_cut, fs, order=5):
     b, a = butter(order, [low, high], btype='band')
     return b, a
 
-root_dir = '/data/datasets/BCICIV2a/data_mat'
+root_dir = '/path/to/datasets/BCICIV2a/data_mat'
 files = [file for file in os.listdir(root_dir)]
 files = sorted(files)
 
@@ -51,7 +51,7 @@ dataset = {
 # print(files_dict)
 
 
-db = lmdb.open('/data/datasets/BCICIV2a/processed_inde_avg_03_50', map_size=1610612736)
+db = lmdb.open('/path/to/datasets/BCICIV2a/processed_inde_avg_03_50', map_size=1610612736)
 for files_key in files_dict.keys():
     for file in files_dict[files_key]:
         print(file)

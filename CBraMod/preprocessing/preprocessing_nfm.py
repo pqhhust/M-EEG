@@ -8,11 +8,11 @@ from scipy.signal import resample
 from tqdm import tqdm
 
 dataset_dirs = [
-    '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/nfeeg/94-Vietnamese-Characters EEG Dataset - Female.csv',
-    '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/nfeeg/94-Vietnamese-Characters EEG Dataset - Male.csv'
+    '/path/to/datasets/nfeeg/94-Vietnamese-Characters EEG Dataset - Female.csv',
+    '/path/to/datasets/nfeeg/94-Vietnamese-Characters EEG Dataset - Male.csv'
 ]
 
-preprocessed_data_dir = '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/nfm'
+preprocessed_data_dir = '/path/to/datasets/nfm'
 
 seed = 3407 # a`c wys`
 np.random.seed(seed)

@@ -43,10 +43,10 @@ def main(argv):
                         help='[FACED, SEED-V, PhysioNet-MI, SHU-MI, ISRUC, CHB-MIT, BCIC2020-3, Mumtaz2016, '
                              'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, UET175]')
     parser.add_argument('--datasets_dir', type=str,
-                        default='/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/pearl_30s_oldnumpy/108',
+                        default='/path/to/datasets/pearl_30s_oldnumpy/108',
                         help='datasets_dir')
     parser.add_argument('--num_of_classes', type=int, default=2, help='number of classes')
-    parser.add_argument('--model_dir', type=str, default='./data/wjq/models_weights/Big/BigFaced', help='model_dir')
+    parser.add_argument('--model_dir', type=str, default='./models_weights/Big/BigFaced', help='model_dir')
     """############ Downstream dataset settings ############"""
 
     parser.add_argument('--num_workers', type=int, default=16, help='num_workers')
@@ -58,7 +58,7 @@ def main(argv):
     parser.add_argument('--use_pretrained_weights', type=bool,
                         default=True, help='use_pretrained_weights')
     parser.add_argument('--foundation_dir', type=str,
-                        default='/mnt/disk1/aiotlab/namth/EEGFoundationModel/EEGPT/checkpoint/108.ckpt',
+                        default='/path/to/EEGPT/checkpoint/108.ckpt',
                         help='foundation_dir')
 
     params = parser.parse_args(argv)
@@ -144,8 +144,8 @@ def objective(trial: optuna.trial.Trial):
         "--epochs", str(epochs),
         "--batch_size", str(batch_size),
         "--downstream_dataset", "PEARL",
-        "--datasets_dir", "/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/pearl_30s_oldnumpy/108",
-        "--foundation_dir", "/mnt/disk1/aiotlab/namth/EEGFoundationModel/EEGPT/checkpoint/108.ckpt",
+        "--datasets_dir", "/path/to/datasets/pearl_30s_oldnumpy/108",
+        "--foundation_dir", "/path/to/EEGPT/checkpoint/108.ckpt",
         "--num_of_classes", "2",
         "--modality_mode", "multi",
         "--frozen", "True",  # nếu parser vẫn dùng type=bool

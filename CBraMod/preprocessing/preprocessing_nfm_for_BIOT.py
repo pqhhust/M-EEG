@@ -9,11 +9,11 @@ from scipy.signal import resample
 from tqdm import tqdm
 
 dataset_dirs = [
-    '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/nfeeg/94-Vietnamese-Characters EEG Dataset - Female.csv',
-    '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/nfeeg/94-Vietnamese-Characters EEG Dataset - Male.csv'
+    '/path/to/datasets/nfeeg/94-Vietnamese-Characters EEG Dataset - Female.csv',
+    '/path/to/datasets/nfeeg/94-Vietnamese-Characters EEG Dataset - Male.csv'
 ]
 
-preprocessed_data_dir = '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/nfm_for_BIOT'  # New directory to avoid overwriting
+preprocessed_data_dir = '/path/to/datasets/nfm_for_BIOT'  # New directory to avoid overwriting
 
 seed = 3407
 np.random.seed(seed)

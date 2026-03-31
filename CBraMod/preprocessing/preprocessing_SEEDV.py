@@ -23,7 +23,7 @@ labels_of_sessions = {
     '3': [2, 1, 3, 0, 4, 4, 0, 3, 2, 1, 3, 4, 1, 2, 0, ],
 }
 
-root_dir = '/data/datasets/BigDownstream/SEED-V/files'
+root_dir = '/path/to/datasets/SEED-V/files'
 files = [file for file in os.listdir(root_dir)]
 files = sorted(files)
 print(files)
@@ -40,7 +40,7 @@ dataset = {
     'test': list(),
 }
 
-db = lmdb.open('/data/datasets/BigDownstream/SEED-V/processed', map_size=15614542346)
+db = lmdb.open('/path/to/datasets/SEED-V/processed', map_size=15614542346)
 
 for file in files:
     raw = mne.io.read_raw_cnt(os.path.join(root_dir, file), preload=True)

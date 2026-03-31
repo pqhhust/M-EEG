@@ -5,7 +5,7 @@ import lmdb
 import pickle
 import mne
 
-root_dir = '/data/datasets/BigDownstream/mental-arithmetic/edf'
+root_dir = '/path/to/datasets/mental-arithmetic/edf'
 files = [file for file in os.listdir(root_dir)]
 files = sorted(files)
 print(files)
@@ -29,7 +29,7 @@ selected_channels = ['EEG Fp1', 'EEG Fp2', 'EEG F3', 'EEG F4', 'EEG F7', 'EEG F8
 
 
 
-db = lmdb.open('/data/datasets/BigDownstream/mental-arithmetic/processed', map_size=1000000000)
+db = lmdb.open('/path/to/datasets/mental-arithmetic/processed', map_size=1000000000)
 for files_key in files_dict.keys():
     for file in files_dict[files_key]:
         raw = mne.io.read_raw_edf(os.path.join(root_dir, file), preload=True)

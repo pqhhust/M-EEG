@@ -7,8 +7,8 @@ import lmdb
 import pickle
 from multimodal import clinical_t5_encoder
 
-root_dir = "/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/text_epilepsy"
-dest_dir = '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/text_epilepsy_preprocessed_eegpt'
+root_dir = "/path/to/datasets/text_epilepsy"
+dest_dir = '/path/to/datasets/text_epilepsy_preprocessed_eegpt'
 
 time_window = 10
 

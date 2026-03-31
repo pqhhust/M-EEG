@@ -24,7 +24,7 @@ asha = ASHAScheduler(
 
 # Đọc kết quả từ experiment cũ (50 trials)
 print("Loading previous experiment results...")
-old_experiment_path = "/home/aiotlab/ray_results/finetune_50e_bo_asha"
+old_experiment_path = "/path/to/ray_results/finetune_50e_bo_asha"
 old_analysis = tune.ExperimentAnalysis(old_experiment_path)
 
 print(f"Found {len(old_analysis.trials)} previous trials")

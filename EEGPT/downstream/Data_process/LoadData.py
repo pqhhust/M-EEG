@@ -257,7 +257,7 @@ class LoadKU(LoadData):
 
 if __name__ == '__main__':
     path = r'F:\pycharmProject\Git_project\EEG_Codebase\Raw_data\BCICIV_2a_gdf'
-    data_path = r'/home/liuwenchao/code/code-test/Raw_data/BCICIV_2a_gdf/A01T.gdf'
+    data_path = r'/path/to/Raw_data/BCICIV_2a_gdf/A01T.gdf'
 
     raw = mne.io.read_raw_gdf(data_path)
 

@@ -36,10 +36,10 @@ def main():
                         help='[FACED, SEED-V, PhysioNet-MI, SHU-MI, ISRUC, CHB-MIT, BCIC2020-3, Mumtaz2016, '
                              'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL]')
     parser.add_argument('--datasets_dir', type=str,
-                        default='/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/pearl_30s_oldnumpy',
+                        default='/path/to/datasets/pearl_30s_oldnumpy',
                         help='datasets_dir')
     parser.add_argument('--num_of_classes', type=int, default=2, help='number of classes')
-    parser.add_argument('--model_dir', type=str, default='./data/wjq/models_weights/Big/BigFaced', help='model_dir')
+    parser.add_argument('--model_dir', type=str, default='./models_weights/Big/BigFaced', help='model_dir')
     """############ Downstream dataset settings ############"""
 
     parser.add_argument('--num_workers', type=int, default=16, help='num_workers')
@@ -51,7 +51,7 @@ def main():
     parser.add_argument('--use_pretrained_weights', type=bool,
                         default=True, help='use_pretrained_weights')
     parser.add_argument('--foundation_dir', type=str,
-                        default='/mnt/disk1/aiotlab/namth/EEGFoundationModel/EEGPT/checkpoint/eegpt_mcae_58chs_4s_large4E.ckpt',
+                        default='/path/to/EEGPT/checkpoint/eegpt_mcae_58chs_4s_large4E.ckpt',
                         help='foundation_dir')
 
     params = parser.parse_args()

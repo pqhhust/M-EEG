@@ -40,10 +40,10 @@ def main():
                         help='[FACED, SEED-V, PhysioNet-MI, SHU-MI, ISRUC, CHB-MIT, BCIC2020-3, Mumtaz2016, '
                              'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, NFM, UET175, EEGTALS]')
     parser.add_argument('--datasets_dir', type=str,
-                        default='/data/datasets/BigDownstream/Faced/processed',
+                        default='/path/to/datasets/Faced/processed',
                         help='datasets_dir')
     parser.add_argument('--num_of_classes', type=int, default=9, help='number of classes')
-    parser.add_argument('--model_dir', type=str, default='./data/wjq/models_weights/Big/BigFaced', help='model_dir')
+    parser.add_argument('--model_dir', type=str, default='./models_weights/Big/BigFaced', help='model_dir')
     """############ Downstream dataset settings ############"""
 
     parser.add_argument('--num_workers', type=int, default=16, help='num_workers')

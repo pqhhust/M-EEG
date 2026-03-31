@@ -20,8 +20,8 @@ available_channels = [
     "P3", "P4", "PO7", "PO8", "OZ"
 ]
 
-root_dir = '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/Data_UET175'
-dest_dir = '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/UET175_for_BIOT'  # New directory
+root_dir = '/path/to/datasets/Data_UET175'
+dest_dir = '/path/to/datasets/UET175_for_BIOT'  # New directory
 
 seed = 3407
 np.random.seed(seed)

@@ -9,8 +9,8 @@ import pickle
 from sklearn.preprocessing import StandardScaler
 
 # %%
-root_dir = "/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/parkinson"
-dest_dir = '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/parkinson_eegpt_official'
+root_dir = "/path/to/datasets/parkinson"
+dest_dir = '/path/to/datasets/parkinson_eegpt_official'
 
 time_window = 10
 

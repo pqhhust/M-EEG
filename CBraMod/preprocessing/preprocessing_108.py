@@ -7,8 +7,8 @@ import lmdb
 import pickle
 from sklearn.preprocessing import StandardScaler
 
-root_dir = "/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/TIA"
-dest_dir = '/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/TIA_preprocessed'
+root_dir = "/path/to/datasets/TIA"
+dest_dir = '/path/to/datasets/TIA_preprocessed'
 
 time_window = 10
 

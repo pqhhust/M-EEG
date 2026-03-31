@@ -55,10 +55,10 @@ def eval(config):
                         help='[FACED, SEED-V, PhysioNet-MI, SHU-MI, ISRUC, CHB-MIT, BCIC2020-3, Mumtaz2016, '
                              'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a]')
     parser.add_argument('--datasets_dir', type=str,
-                        default='/mnt/disk1/aiotlab/namth/EEGFoundationModel/datasets/speech/processed',
+                        default='/path/to/datasets/speech/processed',
                         help='datasets_dir')
     parser.add_argument('--num_of_classes', type=int, default=5, help='number of classes')
-    parser.add_argument('--model_dir', type=str, default='/mnt/disk1/aiotlab/namth/EEGFoundationModel/finetune_models', help='model_dir')
+    parser.add_argument('--model_dir', type=str, default='/path/to/finetune_models', help='model_dir')
     """############ Downstream dataset settings ############"""
 
     parser.add_argument('--num_workers', type=int, default=16, help='num_workers')
@@ -70,7 +70,7 @@ def eval(config):
     parser.add_argument('--use_pretrained_weights', type=bool,
                         default=True, help='use_pretrained_weights')
     parser.add_argument('--foundation_dir', type=str,
-                        default='/mnt/disk1/aiotlab/namth/EEGFoundationModel/CBraMod/pretrained_weights/pretrained_weights.pth',
+                        default='/path/to/CBraMod/pretrained_weights/pretrained_weights.pth',
                         help='foundation_dir')
 
     params = parser.parse_args(argv_list)
