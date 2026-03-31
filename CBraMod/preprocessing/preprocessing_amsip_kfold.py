@@ -20,8 +20,8 @@ available_channels = [
     "P3", "P4", "PO7", "PO8", "OZ"
 ]
 
-root_dir = '/path/to/datasets/Data_UET175'
-dest_dir = '/path/to/datasets/UET175_new'
+root_dir = '/path/to/datasets/Data_A&MSIP'
+dest_dir = '/path/to/datasets/A&MSIP_cbramod'
 
 seed = 3407 # a`c wys`
 np.random.seed(seed)
@@ -89,11 +89,6 @@ file = {
 }
 
 subjects = sorted(os.listdir(root_dir))
-ls_subjects = {
-    'train': [],
-    'val': [],
-    'test': []
-}
 
 for subject in subjects:
     path = os.path.join(root_dir, subject)
@@ -102,34 +97,36 @@ for subject in subjects:
     gender = info['Gender']
     file[gender].append(subject)
 
-train_ratio, val_ratio, test_ratio = 0.7, 0.2, 0.1
+print(f'Number of Male: {len(file["Male"])}')
+print(f'Number of Female: {len(file["Female"])}')
 
-for gender in file.keys():
-    np.random.shuffle(file[gender])
-    n = len(file[gender])
-    n_train = int(n * train_ratio)
-    n_val = int(n * val_ratio)
-    n_test = n - n_train - n_val
-    ls_subjects['train'] += file[gender][:n_train]
-    ls_subjects['val'] += file[gender][n_train:n_train + n_val]
-    ls_subjects['test'] += file[gender][n_train + n_val:]
-
-print(ls_subjects["train"])
-print(ls_subjects["val"])
-print(ls_subjects["test"])
-
-dataset = {
-    'train': list(),
-    'val': list(),
-    'test': list(),
-}
+def stratified_split(fold_idx):
+    splits = {'train': [], 'test': [], 'val': []}
+    for lbl, lst in file.items():
+        n = len(lst)
+        n_test = n // 5
+        test_start = fold_idx * n_test
+        test_end = test_start + n_test if fold_idx < 4 else n  # last fold takes the remainder
+        splits['test'] += lst[test_start:test_end]
+        train = lst[:test_start] + lst[test_end:]
+        num_val = int(len(train) / 4.5)
+        splits['train'] += train[num_val:]
+        splits['val'] += train[:num_val]
+    print(f'fold {fold_idx}:')
+    print(splits["train"])
+    print(splits["val"])
+    print(splits["test"])
+    return splits
 
 db = lmdb.open(dest_dir, map_size=1000000000)
 
-def process(tag, subject, day):
+dic = {}
+
+def process(subject, day):
     sub_path = os.path.join(root_dir, subject, day)
     files = sorted(os.listdir(sub_path))
     runs = [f.split('_')[0] for f in os.listdir(sub_path) if f.endswith(".csv")]
+    ds = []
     for run in runs:
         with open(f"{sub_path}/{run}_Session setup.json", "r", encoding="utf-8") as f:
             setup = json.load(f)
@@ -154,7 +151,7 @@ def process(tag, subject, day):
             e = ts[i] + 4 * 128
             y = mi_labels[i]
             x = preprocess_eeg_mne_suffix(raw[:, s:e]) 
-            if x.shape[1] != 800:
+            if x.shape[1] != 200 * 4:
                 continue
             x = x.reshape(22, 4, 200)
             sample_key = f'{subject}_{day}_{run}_{i}'
@@ -166,16 +163,33 @@ def process(tag, subject, day):
             txn = db.begin(write=True)
             txn.put(key=sample_key.encode(), value=pickle.dumps(data_dict, protocol=pickle.HIGHEST_PROTOCOL))
             txn.commit()
-            dataset[tag].append(sample_key)
+            ds.append(sample_key)
+    return ds
 
-for tag in ls_subjects.keys():
-    for subject in ls_subjects[tag]:
-        sub_path = os.path.join(root_dir, subject)
-        dirs = sorted(os.listdir(sub_path))
-        for day in dirs:
-            if os.path.isdir(os.path.join(sub_path, day)):
-                process(tag=tag, subject=subject, day=day)
+for subject in subjects:
+    sub_path = os.path.join(root_dir, subject)
+    dirs = sorted(os.listdir(sub_path))
+    ds = []
+    for day in dirs:
+        if os.path.isdir(os.path.join(sub_path, day)):
+            ds += process(subject=subject, day=day)
+    dic[subject] = ds
                 
+dataset = []
+
+for i in range(5):
+    ls_subjects = stratified_split(fold_idx=i)
+    keys = {
+        'train': [],
+        'val': [],
+        'test': []
+    }
+    for key in ls_subjects.keys():
+        for subject in ls_subjects[key]:
+            for sample_key in dic[subject]:
+                keys[key].append(sample_key)
+    dataset.append(keys)                
+
 txn = db.begin(write=True)
 txn.put(key='__keys__'.encode(), value=pickle.dumps(dataset, protocol=pickle.HIGHEST_PROTOCOL))
 txn.commit()

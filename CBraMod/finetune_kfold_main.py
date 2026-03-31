@@ -7,11 +7,11 @@ import torch
 # import wandb
 
 from datasets import pearl_kfold_dataset as pearl_dataset
-from datasets import uet175_kfold_dataset as uet175_dataset
+from datasets import amsip_kfold_dataset as amsip_dataset
 from datasets import hos_meeg_dataset
 from datasets import text_meeg_dataset
 from finetune_trainer_kfold import Trainer
-from models import model_for_pearl, model_for_uet175, model_for_meeg, model_for_text_meeg
+from models import model_for_pearl, model_for_amsip, model_for_meeg, model_for_text_meeg
 
 
 
@@ -41,7 +41,7 @@ def main():
     """############ Downstream dataset settings ############"""
     parser.add_argument('--downstream_dataset', type=str, default='epilepsy-text',
                         help='[FACED, SEED-V, PhysioNet-MI, SHU-MI, ISRUC, CHB-MIT, BCIC2020-3, Mumtaz2016, '
-                             'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, UET175, epilepsy-bbb, epilepsy-text]')
+                             'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, A&MSIP, epilepsy-bbb, epilepsy-text]')
     parser.add_argument('--datasets_dir', type=str,
                         default='/path/to/datasets/text_epilepsy_preprocessed',
                         help='datasets_dir')
@@ -103,10 +103,10 @@ def main():
             pr_auc += pr_auc_
             roc_auc += roc_auc_
             res.append((acc_, pr_auc_, roc_auc_))
-        elif params.downstream_dataset == 'UET175':
-            load_dataset = uet175_dataset.LoadDataset(num_fold=i, params=params)
+        elif params.downstream_dataset == 'A&MSIP':
+            load_dataset = amsip_dataset.LoadDataset(num_fold=i, params=params)
             data_loader = load_dataset.get_data_loader()
-            model = model_for_uet175.Model(params).cuda()
+            model = model_for_amsip.Model(params).cuda()
             t = Trainer(params, data_loader, model)
             acc_, kappa_, f1_ = t.train_for_multiclass()
             acc += acc_
@@ -121,7 +121,7 @@ def main():
         f1 /= 5
         pr_auc /= 5
         roc_auc /= 5
-    if params.downstream_dataset in ['UET175']:
+    if params.downstream_dataset in ['A&MSIP']:
         print(f'5-fold cross validation results: acc {acc}, kappa {kappa}, f1 {f1}')
         if params.num_folds == -1:
             for i in range(5):

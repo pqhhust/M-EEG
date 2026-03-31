@@ -33,7 +33,7 @@ def main():
 
     """############ Downstream dataset settings ############"""
     parser.add_argument('--downstream_dataset', type=str, default='FACED',
-                        help='[NFM, UET175, EEGTALS]')
+                        help='[NFM, A&MSIP, EEGTALS]')
     parser.add_argument('--datasets_dir', type=str,
                         default='/path/to/datasets/Faced/processed',
                         help='datasets_dir')

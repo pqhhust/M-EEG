@@ -8,11 +8,11 @@ import torch
 
 from datasets import faced_dataset, seedv_dataset, physio_dataset, shu_dataset, isruc_dataset, chb_dataset, \
     speech_dataset, mumtaz_dataset, seedvig_dataset, stress_dataset, tuev_dataset, tuab_dataset, bciciv2a_dataset, pearl_dataset, nfm_dataset, \
-    uet175_dataset, eegtals_dataset
+    amsip_dataset, eegtals_dataset
 from finetune_trainer import Trainer
 from models import model_for_faced, model_for_seedv, model_for_physio, model_for_shu, model_for_isruc, model_for_chb, \
     model_for_speech, model_for_mumtaz, model_for_seedvig, model_for_stress, model_for_tuev, model_for_tuab, \
-    model_for_bciciv2a, model_for_pearl, model_for_nfm, model_for_uet175, model_for_eegtals
+    model_for_bciciv2a, model_for_pearl, model_for_nfm, model_for_amsip, model_for_eegtals
 
 
 def main():
@@ -38,7 +38,7 @@ def main():
     """############ Downstream dataset settings ############"""
     parser.add_argument('--downstream_dataset', type=str, default='FACED',
                         help='[FACED, SEED-V, PhysioNet-MI, SHU-MI, ISRUC, CHB-MIT, BCIC2020-3, Mumtaz2016, '
-                             'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, NFM, UET175, EEGTALS]')
+                             'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, NFM, A&MSIP, EEGTALS]')
     parser.add_argument('--datasets_dir', type=str,
                         default='/path/to/datasets/Faced/processed',
                         help='datasets_dir')
@@ -162,10 +162,10 @@ def main():
         model = model_for_nfm.Model(params).cuda()
         t = Trainer(params, data_loader, model)
         t.train_for_multiclass()
-    elif params.downstream_dataset == 'UET175':
-        load_dataset = uet175_dataset.LoadDataset(params)
+    elif params.downstream_dataset == 'A&MSIP':
+        load_dataset = amsip_dataset.LoadDataset(params)
         data_loader = load_dataset.get_data_loader()
-        model = model_for_uet175.Model(params).cuda()
+        model = model_for_amsip.Model(params).cuda()
         t = Trainer(params, data_loader, model)
         t.train_for_multiclass()
     elif params.downstream_dataset == 'EEGTALS':

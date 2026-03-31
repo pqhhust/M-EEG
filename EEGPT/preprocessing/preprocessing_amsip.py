@@ -20,8 +20,8 @@ available_channels = [
     "P3", "P4", "PO7", "PO8", "OZ"
 ]
 
-root_dir = '/path/to/datasets/Data_UET175'
-dest_dir = '/path/to/datasets/UET175_eegpt_official'
+root_dir = '/path/to/datasets/Data_A&MSIP'
+dest_dir = '/path/to/datasets/A&MSIP_eegpt_official'
 
 seed = 3407 # a`c wys`
 np.random.seed(seed)

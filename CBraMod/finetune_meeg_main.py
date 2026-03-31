@@ -37,7 +37,7 @@ def main():
     """############ Downstream dataset settings ############"""
     parser.add_argument('--downstream_dataset', type=str, default='PEARL',
                         help='[FACED, SEED-V, PhysioNet-MI, SHU-MI, ISRUC, CHB-MIT, BCIC2020-3, Mumtaz2016, '
-                             'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, UET175, ParkinsonMEEG]')
+                             'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, A&MSIP, ParkinsonMEEG]')
     parser.add_argument('--datasets_dir', type=str,
                         default='/path/to/datasets/pearl_30s_oldnumpy/meeg',
                         help='datasets_dir')
@@ -95,7 +95,7 @@ def main():
         f1 /= 3
         pr_auc /= 3
         roc_auc /= 3
-    if params.downstream_dataset in ['UET175']:
+    if params.downstream_dataset in ['A&MSIP']:
         print(f'3-fold cross validation results: acc {acc}, kappa {kappa}, f1 {f1}')
         if params.num_folds == -1:
             for i in range(3):
