@@ -15,7 +15,7 @@
 | | **EEGPT** | 0.6585 | 0.5963 | 0.6976 |
 | | **LaBraM** | 0.7667 | 0.7700 | 0.8298 |
 
-## Table 5: Regional robustness: Performance comparison of EEG FMs pretrained on US-only versus P-EEG (global) corpora.
+## Table 5: Performance comparison of public checkpoints versus pretrained on P-EEG corpora.
 
 | Task | Architecture | | Balanced Acc. ↑ | Gain | Kappa / AUPR ↑ | Gain | W. F1 / AUROC ↑ | Gain |
 |---|---|---|---|---|---|---|---|---|
