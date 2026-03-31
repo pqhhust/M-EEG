@@ -10,7 +10,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 root_dir = '/path/to/ds004796-download'
-output_dir = '/path/to/datasets/pearl_30s_sternberg/eegpt_108'
+output_dir = '/path/to/datasets/pearl_30s_sternberg/eegpt_meeg'
 csv_path = "/path/to/ds004796-download/meta.csv"
 fs = 200
 seed = 3407 # a`c wys`

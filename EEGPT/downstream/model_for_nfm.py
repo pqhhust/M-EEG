@@ -39,7 +39,7 @@ class LitEEGPTCausal(pl.LightningModule):
     def __init__(self, param):
         super().__init__()    
 
-        if param.foundation_dir[-8:-5] == '108':
+        if param.foundation_dir[-9:-5] == 'meeg':
             param.patch_size = 200
             param.img_size = [1, 200]
         else:
@@ -77,7 +77,7 @@ class LitEEGPTCausal(pl.LightningModule):
         self.target_encoder.load_state_dict(target_encoder_stat)
         self.chan_conv       = Conv1dWithConstraint(1, self.chans_num, 1, max_norm=1)
 
-        if param.foundation_dir[-8:-5] == '108':
+        if param.foundation_dir[-9:-5] == 'meeg':
             in1 = 512
             out1 = 512
             in2 = 512

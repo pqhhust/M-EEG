@@ -5,9 +5,11 @@ import numpy as np
 import torch
 
 # import wandb
-from datasets.downstream import parkinson_108_dataset
-from finetune_trainer_108 import Trainer
-from downstream import model_for_parkinson_108 as model_parkinson
+from datasets import parkinson_meeg_dataset as parkinson_dataset
+from finetune_trainer_meeg import Trainer
+from models import model_for_parkinsonmeeg as model_parkinson
+
+
 
 def main():
     parser = argparse.ArgumentParser(description='Big model downstream')
@@ -35,9 +37,9 @@ def main():
     """############ Downstream dataset settings ############"""
     parser.add_argument('--downstream_dataset', type=str, default='PEARL',
                         help='[FACED, SEED-V, PhysioNet-MI, SHU-MI, ISRUC, CHB-MIT, BCIC2020-3, Mumtaz2016, '
-                             'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, UET175, Parkinson108]')
+                             'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, UET175, ParkinsonMEEG]')
     parser.add_argument('--datasets_dir', type=str,
-                        default='/path/to/datasets/pearl_30s_oldnumpy/108',
+                        default='/path/to/datasets/pearl_30s_oldnumpy/meeg',
                         help='datasets_dir')
     parser.add_argument('--num_of_classes', type=int, default=2, help='number of classes')
     parser.add_argument('--model_dir', type=str, default='./models_weights/Big/BigFaced', help='model_dir')
@@ -52,7 +54,7 @@ def main():
     parser.add_argument('--use_pretrained_weights', type=bool,
                         default=True, help='use_pretrained_weights')
     parser.add_argument('--foundation_dir', type=str,
-                        default='/path/to/EEGPT/checkpoint/108.ckpt',
+                        default='/path/to/EEGPT/checkpoint/meeg.ckpt',
                         help='foundation_dir')
 
     params = parser.parse_args()
@@ -75,9 +77,9 @@ def main():
         #         config=vars(params))
         setup_seed(params.seed)
         print(f'the downstream dataset is {params.downstream_dataset}, fold {i}')
-        if params.downstream_dataset == 'Parkinson108':
+        if params.downstream_dataset == 'ParkinsonMEEG':
             params.datasets_dir = f'{dir}/fold_{i}'
-            load_dataset = parkinson_108_dataset.LoadDataset(params)
+            load_dataset = parkinson_dataset.LoadDataset(params)
             data_loader = load_dataset.get_data_loader()
             model = model_parkinson.Model(params).cuda()
             t = Trainer(params, data_loader, model)
@@ -98,7 +100,7 @@ def main():
         if params.num_folds == -1:
             for i in range(3):
                 print(f'fold {i}: acc {res[i][0]:.5f}, kappa {res[i][1]:.5f}, f1 {res[i][2]:.5f}')
-    elif params.downstream_dataset in ['PEARL', 'Parkinson108']:
+    elif params.downstream_dataset in ['PEARL', 'ParkinsonMEEG']:
         print(f'3-fold cross validation results: acc {acc}, pr_auc {pr_auc}, roc_auc {roc_auc}')
         if params.num_folds == -1:
             for i in range(3):

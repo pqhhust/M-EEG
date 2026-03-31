@@ -9,9 +9,9 @@ import statistics as stats
 
 
 from datasets.downstream import pearl_kfold_dataset as pearl_dataset
-from datasets.downstream import uet175_dataset, hos_108_dataset, text_108_dataset
+from datasets.downstream import uet175_dataset, hos_meeg_dataset, text_meeg_dataset
 from finetune_trainer_kfold import Trainer
-from downstream import model_for_pearls as model_for_pearl, model_for_uet175, model_for_108, model_for_text_108
+from downstream import model_for_pearls as model_for_pearl, model_for_uet175, model_for_meeg, model_for_text_meeg
 
 import sys
 
@@ -102,12 +102,12 @@ def main():
                     model = model_for_pearl.Model(params).cuda()
                 elif params.downstream_dataset == 'epilepsy-text':
                     print('Model for epilepsy-text loaded')
-                    load_dataset = text_108_dataset.LoadDataset(params)
-                    model = model_for_text_108.Model(params).cuda()
+                    load_dataset = text_meeg_dataset.LoadDataset(params)
+                    model = model_for_text_meeg.Model(params).cuda()
                 else:  # epilepsy-bbb
                     print('Model for epilepsy-bbb loaded')
-                    load_dataset = hos_108_dataset.LoadDataset(params)
-                    model = model_for_108.Model(params).cuda()
+                    load_dataset = hos_meeg_dataset.LoadDataset(params)
+                    model = model_for_meeg.Model(params).cuda()
                 data_loader = load_dataset.get_data_loader()
                 t = Trainer(params, data_loader, model)
                 acc_, pr_auc_, roc_auc_ = t.train_for_binaryclass()

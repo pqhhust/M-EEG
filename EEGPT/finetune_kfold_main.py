@@ -7,9 +7,9 @@ import torch
 # import wandb
 
 from datasets.downstream import pearl_kfold_dataset as pearl_dataset
-from datasets.downstream import uet175_dataset, hos_108_dataset, text_108_dataset
+from datasets.downstream import uet175_dataset, hos_meeg_dataset, text_meeg_dataset
 from finetune_trainer_kfold import Trainer
-from downstream import model_for_pearls, model_for_uet175, model_for_108, model_for_text_108
+from downstream import model_for_pearls, model_for_uet175, model_for_meeg, model_for_text_meeg
 
 
 
@@ -41,7 +41,7 @@ def main():
                         help='[FACED, SEED-V, PhysioNet-MI, SHU-MI, ISRUC, CHB-MIT, BCIC2020-3, Mumtaz2016, '
                              'SEED-VIG, MentalArithmetic, TUEV, TUAB, BCIC-IV-2a, PEARL, UET175, epilepsy-bbb, epilepsy-text]')
     parser.add_argument('--datasets_dir', type=str,
-                        default='/path/to/datasets/pearl_30s_oldnumpy/108',
+                        default='/path/to/datasets/pearl_30s_oldnumpy/meeg',
                         help='datasets_dir')
     parser.add_argument('--num_of_classes', type=int, default=2, help='number of classes')
     parser.add_argument('--model_dir', type=str, default='./models_weights/Big/BigFaced', help='model_dir')
@@ -56,7 +56,7 @@ def main():
     parser.add_argument('--use_pretrained_weights', type=bool,
                         default=True, help='use_pretrained_weights')
     parser.add_argument('--foundation_dir', type=str,
-                        default='/path/to/EEGPT/checkpoint/108.ckpt',
+                        default='/path/to/EEGPT/checkpoint/meeg.ckpt',
                         help='foundation_dir')
 
     params = parser.parse_args()
@@ -82,13 +82,13 @@ def main():
         if params.downstream_dataset in ['PEARL', 'epilepsy-bbb', 'epilepsy-text']:
             params.datasets_dir = f'{dir}/fold_{i}'
             if params.downstream_dataset == 'epilepsy-bbb':
-                load_dataset = hos_108_dataset.LoadDataset(params)
+                load_dataset = hos_meeg_dataset.LoadDataset(params)
                 data_loader = load_dataset.get_data_loader()
-                model = model_for_108.Model(params).cuda()
+                model = model_for_meeg.Model(params).cuda()
             elif params.downstream_dataset == 'epilepsy-text':
-                load_dataset = text_108_dataset.LoadDataset(params)
+                load_dataset = text_meeg_dataset.LoadDataset(params)
                 data_loader = load_dataset.get_data_loader()
-                model = model_for_text_108.Model(params).cuda()
+                model = model_for_text_meeg.Model(params).cuda()
             else:
                 load_dataset = pearl_dataset.LoadDataset(params)
                 data_loader = load_dataset.get_data_loader()

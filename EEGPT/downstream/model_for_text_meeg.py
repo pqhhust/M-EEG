@@ -85,7 +85,7 @@ class Model(pl.LightningModule):
     def __init__(self, param):
         super().__init__()    
 
-        if param.foundation_dir[-8:-5] == '108':
+        if param.foundation_dir[-9:-5] == 'meeg':
             param.patch_size = 200
             param.img_size = [19, 2000]
         else:
@@ -124,7 +124,7 @@ class Model(pl.LightningModule):
         self.chan_conv       = Conv1dWithConstraint(19, self.chans_num, 1, max_norm=1)
 
         if param.modality_mode == 'mono':
-            if param.foundation_dir[-8:-5] == '108':
+            if param.foundation_dir[-9:-5] == 'meeg':
                 in1 = 512
                 out1 = 32
                 in2 = 320
@@ -166,7 +166,7 @@ class Model(pl.LightningModule):
             )
             self.forward = self.multi_attend_forward
         elif param.modality_mode == 'multi':
-            if param.foundation_dir[-8:-5] == '108':
+            if param.foundation_dir[-9:-5] == 'meeg':
                 in1 = 512
                 out1 = 16
                 in2 = 160

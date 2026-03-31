@@ -8,10 +8,10 @@ import torch
 
 from datasets import pearl_kfold_dataset as pearl_dataset
 from datasets import uet175_kfold_dataset as uet175_dataset
-from datasets import hos_108_dataset
-from datasets import text_108_dataset
+from datasets import hos_meeg_dataset
+from datasets import text_meeg_dataset
 from finetune_trainer_kfold import Trainer
-from models import model_for_pearl, model_for_uet175, model_for_108, model_for_text_108
+from models import model_for_pearl, model_for_uet175, model_for_meeg, model_for_text_meeg
 
 
 
@@ -89,12 +89,12 @@ def main():
                 model = model_for_pearl.Model(params).cuda()
             elif params.downstream_dataset == 'epilepsy-text':
                 print('Model for epilepsy-text loaded')
-                load_dataset = text_108_dataset.LoadDataset(params)
-                model = model_for_text_108.Model(params).cuda()
+                load_dataset = text_meeg_dataset.LoadDataset(params)
+                model = model_for_text_meeg.Model(params).cuda()
             else:  # epilepsy-bbb
                 print('Model for epilepsy-bbb loaded')
-                load_dataset = hos_108_dataset.LoadDataset(params)
-                model = model_for_108.Model(params).cuda()
+                load_dataset = hos_meeg_dataset.LoadDataset(params)
+                model = model_for_meeg.Model(params).cuda()
             data_loader = load_dataset.get_data_loader()
             t = Trainer(params, data_loader, model)
             loader = load_dataset.get_data_loader()
