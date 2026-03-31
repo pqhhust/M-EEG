@@ -16,7 +16,7 @@ labeler = pd.read_csv(f"{root_dir}/subject_to_label.csv")
 label_dict = {}
 label_list = {0: [], 1:[]}
 for idx, row in labeler.iterrows():
-    # row là 1 Series
+    # row is a Series
     label_dict[row["subject_id"]] = row["label"]
     label_list[row["label"]].append(row["subject_id"])
 np.random.shuffle(label_list[0])
@@ -47,7 +47,7 @@ def pre_reading_eeg(subject_id):
         path = os.path.join(subject_path, file)
         try:
             raw = mne.io.read_raw_edf(path, preload=True, verbose=False)
-            raw.crop(tmin=2.0)   # tmin tính theo giây
+            raw.crop(tmin=2.0)   # tmin in seconds
         except Exception as e:
             print(f'[WARN] failed to read {path}: {e}')
             continue

@@ -138,7 +138,7 @@ def objective(trial: optuna.trial.Trial):
     lr = trial.suggest_categorical("lr", GRID["lr"])
     batch_size = trial.suggest_categorical("batch_size", GRID["batch_size"])
 
-    # Lưu ý: mọi giá trị trong argv là string
+    # Note: all values in argv are strings
     argv = [
         "--lr", str(lr),
         "--epochs", str(epochs),
@@ -148,8 +148,8 @@ def objective(trial: optuna.trial.Trial):
         "--foundation_dir", "/path/to/EEGPT/checkpoint/108.ckpt",
         "--num_of_classes", "2",
         "--modality_mode", "multi",
-        "--frozen", "True",  # nếu parser vẫn dùng type=bool
-        "--num_folds", "4",  # mặc định -1 rồi; bỏ nếu không cần
+        "--frozen", "True",  # if parser still uses type=bool
+        "--num_folds", "4",  # default is -1; omit if not needed
     ]
     
     out = main(argv)  # VD PEARL -> (acc, pr_auc, roc_auc)
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     study = optuna.create_study(
         direction="maximize",
         sampler=sampler,
-        # storage="sqlite:///optuna.db", load_if_exists=True,  # (tuỳ chọn) để resume/log
+        # storage="sqlite:///optuna.db", load_if_exists=True,  # (optional) for resume/log
     )
     study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
     print("Best params:", study.best_trial.params)

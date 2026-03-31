@@ -47,9 +47,9 @@ class ParamAttention(nn.Module):
 
     def forward(
         self,
-        x_k: torch.Tensor,    # (b, c, d)  - keys/values (không pad)
-        x_q: torch.Tensor,    # (b, q, d)  - queries (có pad)
-        x_mask: torch.Tensor  # (b, q), bool, True = query thật, False = PAD
+        x_k: torch.Tensor,    # (b, c, d)  - keys/values (no padding)
+        x_q: torch.Tensor,    # (b, q, d)  - queries (with padding)
+        x_mask: torch.Tensor  # (b, q), bool, True = real query, False = PAD
     ) -> torch.Tensor:
         """
         return: (b, q, d)
@@ -67,16 +67,16 @@ class ParamAttention(nn.Module):
         # attention scores: (b, q, c)
         scores = torch.einsum('bqd,bcd->bqc', q, k) / math.sqrt(d_k)
 
-        # softmax theo chiều keys
+        # softmax along keys dimension
         attn = F.softmax(scores, dim=-1)    # (b, q, c)
         attn = self.drop(attn)
 
         # weighted sum: (b, q, d)
         out = torch.einsum('bqc,bcd->bqd', attn, v)  # (b, q, d)
 
-        # mask các query PAD: (b, q, 1)
-        mask_q = x_mask.unsqueeze(-1)  # bool -> broadcast theo d
-        out = out * mask_q             # PAD query -> toàn 0
+        # mask PAD queries: (b, q, 1)
+        mask_q = x_mask.unsqueeze(-1)  # bool -> broadcast along d
+        out = out * mask_q             # PAD query -> all zeros
 
         return out
 

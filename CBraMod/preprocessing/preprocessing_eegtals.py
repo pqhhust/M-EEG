@@ -6,7 +6,7 @@ import lmdb
 from scipy.signal import butter, resample, filtfilt
 import json
 from tqdm import tqdm
-# Chỉ tắt cảnh báo RuntimeWarning có chứa "annotation(s) that were expanding outside the data range"
+# Suppress RuntimeWarning about "annotation(s) that were expanding outside the data range"
 import warnings
 warnings.filterwarnings(
     "ignore", 
@@ -25,14 +25,14 @@ np.random.seed(seed)
 
 def process_raw(raw: mne.io.BaseRaw) -> mne.io.BaseRaw:
     """
-    Fit ICA trên bản high-pass 1 Hz, rồi apply lên bản band-pass 0.3–50 Hz.
-    Trả về: raw đã clean (0.3–50 Hz + ICA). Raw gốc không đổi.
+    Fit ICA on high-pass 1 Hz copy, then apply to band-pass 0.3-50 Hz copy.
+    Returns: cleaned raw (0.3-50 Hz + ICA). Original raw unchanged.
     """
-    # --- 1) Bản để FIT ICA: high-pass 1 Hz bằng MNE (để MNE ghi nhận highpass, hết warning)
+    # --- 1) Copy for FIT ICA: high-pass 1 Hz via MNE (so MNE registers highpass, avoids warning)
     raw_hp = raw.copy().filter(l_freq=1.0, h_freq=None, picks="eeg")
     raw_hp.notch_filter(freqs=[50.0], picks="eeg", method="iir", verbose=False)
 
-    # --- 2) Bản để APPLY ICA: tự lọc 0.3–50 Hz (demean + band-pass, zero-phase)
+    # --- 2) Copy for APPLY ICA: custom filter 0.3-50 Hz (demean + band-pass, zero-phase)
     fs = float(raw.info["sfreq"])
     nyq = 0.5 * fs
     b, a = butter(5, [0.3/nyq, 50.0/nyq], btype="band")
@@ -41,22 +41,22 @@ def process_raw(raw: mne.io.BaseRaw) -> mne.io.BaseRaw:
     data = data - np.mean(data, axis=1, keepdims=True)
     data_bp = filtfilt(b, a, data, axis=-1)
 
-    # Lắp lại thành Raw để apply ICA (giữ nguyên info/kênh EEG)
-    info_eeg = raw.copy().pick("eeg").info  # info chỉ của EEG, đúng thứ tự kênh
+    # Reassemble as Raw for ICA application (preserve info/EEG channels)
+    info_eeg = raw.copy().pick("eeg").info  # EEG-only info, correct channel order
     raw_bp = mne.io.RawArray(data_bp, info_eeg, verbose=False)
     raw_bp.notch_filter(freqs=[50.0], picks="eeg", method="iir", verbose=False)
 
-    # --- 3) Fit ICA trên raw_hp (EEG)
+    # --- 3) Fit ICA on raw_hp (EEG)
     n_comp = max(5, min(20, raw_hp.info["nchan"] - 1))
     ica = mne.preprocessing.ICA(n_components=n_comp, method="picard",
                                 random_state=97, max_iter="auto")
     ica.fit(raw_hp)
 
-    # --- 4) Apply ICA học từ raw_hp lên raw_bp (cùng không gian kênh EEG)
+    # --- 4) Apply ICA learned from raw_hp onto raw_bp (same EEG channel space)
     raw_clean_eeg = raw_bp.copy()
     ica.apply(raw_clean_eeg)
 
-    # Có kênh khác: thay phần EEG trong bản gốc bằng EEG đã clean
+    # Replace EEG channels in original raw with cleaned EEG data
     raw_out = raw.copy()
     eeg_picks = mne.pick_types(raw_out.info, eeg=True, exclude=())
     raw_out._data[eeg_picks, :] = raw_clean_eeg.get_data()
@@ -71,7 +71,7 @@ def process_raw_no_ica(raw: mne.io.BaseRaw,
                        notch_freq=50.0,
                        order=5) -> mne.io.BaseRaw:
     """
-    Làm sạch EEG KHÔNG ICA, xử lý trực tiếp trên raw:
+    Clean EEG without ICA, process directly on raw:
       - Band-pass (Butterworth zero-phase)
       - Demean
       - Notch filter
@@ -90,10 +90,10 @@ def process_raw_no_ica(raw: mne.io.BaseRaw,
     data = data - np.mean(data, axis=1, keepdims=True)
     data_bp = filtfilt(b, a, data, axis=-1)
 
-    # gán dữ liệu lọc trở lại raw_out
+    # assign filtered data back to raw_out
     raw_out._data[eeg_picks, :] = data_bp
 
-    # notch filter ngay trên raw_out
+    # apply notch filter on raw_out
     if notch_freq is not None and notch_freq > 0:
         raw_out.notch_filter(freqs=[float(notch_freq)],
                              picks=eeg_picks,

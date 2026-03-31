@@ -77,13 +77,13 @@ def extract_df(df, subject_id):
     return df[df["participant_id"].isin(ids)].copy().drop(columns=["participant_id"])
 
 def apply_standardize_df(df, mean, std):
-    # Lấy các cột số
+    # Get numeric columns
     num_cols = df.select_dtypes(include="number").columns
     
-    # Thay null bằng mean của từng cột (theo mean đã cho)
+    # Fill nulls with column-wise mean (using provided mean)
     df[num_cols] = df[num_cols].fillna(mean)
     
-    # Standardize bằng mean, std đã cho
+    # Standardize using provided mean and std
     df[num_cols] = (df[num_cols] - mean) / std
     return df
 
@@ -164,7 +164,7 @@ def fold_construct(fold_idx):
         'val': list(),
         'test': list(),
     }
-    df = pd.read_csv(csv_path, encoding="utf-8", sep=",")  # đổi sep nếu ; hoặc \t
+    df = pd.read_csv(csv_path, encoding="utf-8", sep=",")  # change sep if ; or \t
     df = df.drop(columns=['age', 'sex'])
 
     files_dict = stratified_split(fold_idx=fold_idx)

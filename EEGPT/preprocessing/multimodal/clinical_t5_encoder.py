@@ -11,8 +11,8 @@ MODEL_NAME = "hossboll/clinical-t5"
 class ClinicalT5Encoder:
     """
     Module:
-      input : raw text (str hoặc list[str])
-      output: đầu ra encoder của T5 (last_hidden_state) + attention_mask
+      input : raw text (str or list[str])
+      output: T5 encoder output (last_hidden_state) + attention_mask
               - last_hidden_state: (batch_size, seq_len, hidden_size)
               - attention_mask:   (batch_size, seq_len)
     """
@@ -35,9 +35,9 @@ class ClinicalT5Encoder:
         """
         Parameters
         ----------
-        texts : str hoặc list[str]
+        texts : str or list[str]
         max_length : int
-            độ dài tối đa khi tokenize
+            maximum length for tokenization
 
         Returns
         -------

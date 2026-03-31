@@ -28,38 +28,38 @@ np.random.seed(seed)
 
 def load_eeg_csv_to_ct(path: str) -> np.ndarray:
     """
-    Đọc CSV EEG với 22 cột (mỗi cột = 1 kênh), hàng = thời gian.
-    Trả về mảng numpy shape [C, T] = (22, T).
+    Read CSV EEG with 22 columns (each column = 1 channel), rows = time.
+    Returns numpy array of shape [C, T] = (22, T).
     """
     df = pd.read_csv(path)
     if df.shape[1] != 22:
         raise ValueError(f"Expected 22 columns, got {df.shape[1]} in {path}")
 
-    # Ép về float, lỗi chuyển đổi sẽ tạo NaN
+    # Cast to float; conversion errors become NaN
     data = df.astype(float).to_numpy()       # shape (T, 22)
     return data.T    
 
 def preprocess_eeg_mne_prefix(x: np.ndarray) -> np.ndarray:
     """
-    Giả định: x shape (22, T), fs = 128 Hz.
+    Assumes: x shape (22, T), fs = 128 Hz.
     Pipeline: demean -> band-pass(1–50) -> notch 50 -> average reference (CAR) -> resample 256 Hz -> z-score
-    Trả về: ndarray (22, round(T * 256 / 128))
+    Returns: ndarray (22, round(T * 256 / 128))
     """
     assert isinstance(x, np.ndarray) and x.ndim == 2 and x.shape[0] == 22, "x must be (22, T)"
     fs = 128.0
     info = mne.create_info(ch_names=available_channels, sfreq=fs, ch_types="eeg")
     raw = mne.io.RawArray(x.astype(float, copy=False), info, verbose=False)
 
-    # Khử lệch DC nhẹ & high-pass >= 1 Hz để ICA ổn định (khuyến nghị của MNE)
+    # Remove DC offset & high-pass >= 1 Hz for stable ICA (recommended by MNE)
     raw._data -= raw._data.mean(axis=1, keepdims=True)
     raw.filter(l_freq=1.0, h_freq=None, method="iir",
                iir_params=dict(order=5, ftype="butter"), verbose=False)
     raw.notch_filter(freqs=[50.0], method="iir", verbose=False)
 
-    # Tham chiếu trung bình (CAR) giúp ICA tách tốt hơn
+    # Average reference (CAR) improves ICA decomposition
     raw.set_eeg_reference("average", verbose=False)
 
-    # Ưu tiên Picard-ICA; nếu chưa có, fallback sang FastICA
+    # Prefer Picard-ICA; fallback to FastICA if unavailable
     ica = mne.preprocessing.ICA(
         n_components=0.999, method="picard",
         random_state=seed, max_iter="auto", verbose=False

@@ -24,41 +24,41 @@ selected_channels = [
 train_ratio, val_ratio, test_ratio = 0.7, 0.15, 0.15
 
 def str_to_array(s):
-    # Bỏ các ký tự [ và ]
+    # Remove [ and ] characters
     s = s.replace('[', ' ').replace(']', ' ')
-    # Dùng regex tách theo khoảng trắng hoặc dấu phẩy
+    # Split by whitespace or comma using regex
     tokens = re.split(r'[,\s]+', s.strip())
-    # Bỏ chuỗi rỗng
+    # Remove empty strings
     tokens = [t for t in tokens if t != '']
-    # Chuyển sang numpy array kiểu int
+    # Convert to numpy int array
     return np.array([int(t) for t in tokens], dtype=np.int64)
     
 def str_to_label(s: str) -> np.ndarray:
     """
-    Tách chuỗi theo khoảng trắng và xuống dòng,
-    bỏ qua các khoảng trắng liên tiếp.
-    Trả về numpy array kiểu int.
+    Split string by whitespace and newlines,
+    ignoring consecutive whitespace.
+    Returns numpy int array.
     """
-    # Bỏ các ký tự [ và ]
+    # Remove [ and ] characters
     s = s.replace('[', ' ').replace(']', ' ')
-    # Dùng regex tách theo khoảng trắng hoặc dấu phẩy
+    # Split by whitespace or comma using regex
     tokens = re.split(r'[,\s]+', s.strip())
-    # Bỏ chuỗi rỗng
+    # Remove empty strings
     tokens = [t for t in tokens if t != '']
-    # Chuyển sang numpy array kiểu int
+    # Convert to numpy int array
     label = np.array([int(t) for t in tokens], dtype=np.int64)[0]
     return label.item()
 
 
 def resample_512_to_200(x: np.ndarray) -> np.ndarray:
     """
-    x: np.array có shape (512,) - 1 giây tín hiệu ở 512 Hz
-    Trả về: np.array có shape (1, 200) - resample xuống 200 Hz
+    x: np.array of shape (512,) - 1 second of signal at 512 Hz
+    Returns: np.array of shape (1, 200) - resampled to 200 Hz
     """
     if x.shape[0] != 512:
         raise ValueError(f"Expected input shape (512,), got {x.shape}")
     
-    y = resample(x, 200)           # resample xuống 200 điểm
+    y = resample(x, 200)           # resample to 200 points
     return y.reshape(1, -1)        # shape (1, 200)
 
 dataset = {

@@ -19,7 +19,7 @@ labeler = pd.read_csv(f"{root_dir}/labels.csv")
 label_dict = {}
 label_list = {0: [], 1:[]}
 for idx, row in labeler.iterrows():
-    # row là 1 Series
+    # row is a Series
     label_dict[row["SUBJECT_ID"]] = row["label"]
     label_list[row["label"]].append(row["SUBJECT_ID"])
 np.random.shuffle(label_list[0])
@@ -49,7 +49,7 @@ def pre_reading_eeg(subject_id):
         path = os.path.join(subject_path, file)
         try:
             raw = mne.io.read_raw_edf(path, preload=True, verbose=False)
-            raw.crop(tmin=2.0)   # tmin tính theo giây
+            raw.crop(tmin=2.0)   # tmin in seconds
         except Exception as e:
             print(f'[WARN] failed to read {path}: {e}')
             continue
@@ -98,13 +98,13 @@ def extract_df(df, subject_id):
     return df[df["SUBJECT_ID"].isin(subject_id)].copy()
 
 def apply_standardize_df(df, mean, std):
-    # Lấy các cột số
+    # Get numeric columns
     num_cols = df.select_dtypes(include="number").columns
     
-    # Thay null bằng mean của từng cột (theo mean đã cho)
+    # Fill nulls with column-wise mean (using provided mean)
     df[num_cols] = df[num_cols].fillna(mean)
     
-    # Standardize bằng mean, std đã cho
+    # Standardize using provided mean and std
     df[num_cols] = (df[num_cols] - mean) / std
     return df
 
